@@ -1,0 +1,43 @@
+.anime-home-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+
+    &-pagination {
+        margin-top: 24px;
+        display: flex;
+        justify-content: center;
+    }
+
+    &-empty {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 400px;
+        width: 100%;
+    }
+}
+
+.anime-home-page-search {
+    width: 100%;
+    max-width: 1200px;
+    margin-bottom: 20px;
+}
+
+.anime-home-page-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+    gap: 24px;
+    width: 100%;
+    max-width: 1200px;
+    align-items: stretch;
+}
+
+.anime-home-page-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
