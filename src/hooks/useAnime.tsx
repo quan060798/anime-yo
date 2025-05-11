@@ -20,8 +20,7 @@ export const useAnime = (props: UseAnimeProps) => {
         onError: (error) => {
             onSearchError?.(error);
         },
-        debounceWait: 250,
-    })
+    });
 
     const { run: getAnimeDetail, loading: getAnimeDetailLoading } = useRequest((id: number) => AnimeController.getAnimeDetail(id), {
         manual: true,
@@ -31,7 +30,7 @@ export const useAnime = (props: UseAnimeProps) => {
         onError: (error) => {
             onGetAnimeDetailError?.(error);
         },
-    })
+    });
 
     return {
         searchAnime,

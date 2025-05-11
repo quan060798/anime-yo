@@ -1,9 +1,10 @@
 import { Input, message, Pagination, Spin, Empty } from "antd";
 import './index.less';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAnime } from "@/hooks/useAnime";
 import AnimeCard from "./component/AnimeCard";
 import { useLocation } from "react-router-dom";
+import useDebounce from "@/hooks/useDebounce";
 
 interface AnimeState {
   id: number;
@@ -19,6 +20,32 @@ const AnimeHomePage = () => {
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const location = useLocation();
+
+  const { searchAnime, searchAnimeLoading } = useAnime({
+    onSearchSuccess: (res) => {
+      if (res.data) {
+        const data = res.data.map((item) => {
+          return {
+            id: item.mal_id,
+            name: item.title,
+            image: item.images.jpg.image_url,
+          }
+        })
+        setAnimeList(data)
+        setTotal(res.pagination?.items?.total || 0)
+      }
+    },
+    onSearchError: () => {
+      message.error('Search anime failed')
+    }
+  })
+
+  const debouncedSearch = useCallback(
+    useDebounce((params: { page: number; limit: number; q: string }) => {
+      searchAnime(params);
+    }, 250),
+    [searchAnime]
+  );
 
   // Handle state restoration or clear on refresh
   useEffect(() => {
@@ -40,33 +67,14 @@ const AnimeHomePage = () => {
     }
   }, [location.state]);
 
-  const { searchAnime, searchAnimeLoading } = useAnime({
-    onSearchSuccess: (res) => {
-      if (res.data) {
-        const data = res.data.map((item) => {
-          return {
-            id: item.mal_id,
-            name: item.title,
-            image: item.images.jpg.image_url,
-          }
-        })
-        setAnimeList(data)
-        setTotal(res.pagination?.items?.total || 0)
-      }
-    },
-    onSearchError: () => {
-      message.error('Search anime failed')
-    }
-  })
-
   // Handle search and pagination
   useEffect(() => {
-    searchAnime({
+    debouncedSearch({
       page,
       limit: pageSize,
       q: searchAnimeString
     });
-  }, [page, pageSize, searchAnimeString, searchAnime]);
+  }, [page, pageSize, searchAnimeString, debouncedSearch]);
 
   const handlePageChange = (newPage: number, newPageSize: number) => {
     setPage(newPage);
